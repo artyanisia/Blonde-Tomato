@@ -1,7 +1,7 @@
 // backend/models/request.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize'); 
-const User = require('./user'); // Presupunem că modelul User este deja definit
+const User = require('./user'); 
 
 const Request = sequelize.define('Request', {
     id: {
@@ -20,8 +20,7 @@ const Request = sequelize.define('Request', {
         type: DataTypes.STRING,
         allowNull: true
     },
-    
-    // Noul câmp pentru a implementa regula locurilor
+
     isFinalized: { 
         type: DataTypes.BOOLEAN,
         defaultValue: false,
@@ -31,8 +30,7 @@ const Request = sequelize.define('Request', {
     tableName: 'requests'
 });
 
-// Aici se stabilesc relațiile (Foreign Keys)
-// O cerere aparține unui Student și unui Profesor
+//Aici se stabilesc relațiile (Foreign Keys)
 Request.belongsTo(User, { as: 'student', foreignKey: 'studentId' }); 
 Request.belongsTo(User, { as: 'professor', foreignKey: 'professorId' }); 
 

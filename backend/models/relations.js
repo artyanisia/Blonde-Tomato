@@ -4,6 +4,8 @@ const Student = require("./student");
 const Session = require("./session");
 const ThesisRequest = require("./thesisRequest");
 
+//defines relations between models
+
 function defineRelations() {
   User.hasOne(Professor, {
     foreignKey: "userId",
@@ -23,38 +25,38 @@ function defineRelations() {
 
   Professor.hasMany(Session, {
     foreignKey: "professorId",
-    as: "sessions",
+    as: "Sessions",
   });
   Session.belongsTo(Professor, {
     foreignKey: "professorId",
-    as: "professor",
+    as: "Professor",
   });
 
   Student.hasMany(ThesisRequest, {
     foreignKey: "studentId",
-    as: "requestsMade",
+    as: "RequestsMade",
   });
   ThesisRequest.belongsTo(Student, {
     foreignKey: "studentId",
-    as: "student",
+    as: "Student",
   });
 
   Professor.hasMany(ThesisRequest, {
     foreignKey: "professorId",
-    as: "requestsReceived",
+    as: "RequestsReceived",
   });
   ThesisRequest.belongsTo(Professor, {
     foreignKey: "professorId",
-    as: "professor",
+    as: "Professor",
   });
 
   Session.hasMany(ThesisRequest, {
     foreignKey: "sessionId",
-    as: "requests",
+    as: "Requests",
   });
   ThesisRequest.belongsTo(Session, {
     foreignKey: "sessionId",
-    as: "session",
+    as: "Session",
   });
 }
 

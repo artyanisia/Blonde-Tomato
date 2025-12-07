@@ -1,6 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../sequelize.js");
 
+//central transactional entity, linking the Student, Professor and Session models
+
 const ThesisRequest = sequelize.define("thesisRequest", {
   id: {
     type: DataTypes.UUID,
@@ -32,16 +34,16 @@ const ThesisRequest = sequelize.define("thesisRequest", {
     field: "rejection_reason",
   },
 
-  preliminaryFileUrl: {
-    type: DataTypes.STRING,
-    allowNull: true,
-    field: "preliminary_file_url",
-  },
-
   finalProfessorFileUrl: {
     type: DataTypes.STRING,
     allowNull: true,
     field: "final_professor_file_url",
+  },
+
+  signedRequestFilePath: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    field: "signed_request_file_path",
   },
 });
 

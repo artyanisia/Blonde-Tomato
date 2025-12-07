@@ -10,7 +10,7 @@ defineRelations();
 
 // Sync database and start server
 sequelize
-  .sync({ alter: true })
+  .sync({ force: true })
   .then(() => {
     console.log("Database synchronized successfully");
 
@@ -25,10 +25,12 @@ sequelize
     const auth = require("./routes/auth");
     const sync = require("./routes/sync");
     const session = require("./routes/session");
+    const request = require("./routes/request.js");
 
     application.use("/api/auth", auth);
     application.use("/api/sync", sync);
     application.use("/api/sessions", session);
+    application.use("/api/requests", request);
 
     application.listen(PORT, () => {
       console.log(`The server is running on http://localhost: ${PORT}.`);

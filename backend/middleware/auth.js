@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = process.env.JWT_SECRET || "jwt_long_secret_key";
 
+// verifies token 
+
 exports.authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 

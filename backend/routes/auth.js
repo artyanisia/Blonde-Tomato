@@ -43,6 +43,7 @@ router.post("/register", async (req, res, next) => {
           {
             userId: user.id,
             maxStudents: 10,
+            currentStudentsCount: 0,
           },
           { transaction: t }
         );
@@ -50,6 +51,7 @@ router.post("/register", async (req, res, next) => {
         await Student.create(
           {
             userId: user.id,
+            hasCoordinator: false,
           },
           { transaction: t }
         );

@@ -1,6 +1,9 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../sequelize.js");
 
+// Student model
+// extends base User entity ( 1:1 relationship)
+
 const Student = sequelize.define("student", {
   userId: {
     type: DataTypes.UUID,

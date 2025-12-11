@@ -4,3 +4,5 @@
 .env
 .vscode/
 /backend/sqlite/database.db
+/backend/node_modules
+/frontend/node_modules

@@ -15,7 +15,15 @@ const JWT_SECRET = process.env.JWT_SECRET || "jwt_long_secret_key";
 router.post("/register", async (req, res, next) => {
   const { email, password, name, role } = req.body;
 
+  console.log("Register request received:", {
+    email,
+    password: "***",
+    name,
+    role,
+  });
+
   if (!email || !password || !name || !role) {
+    console.error("Missing required fields");
     return res.status(400).json({ message: "All fields are required." });
   }
 
@@ -59,11 +67,21 @@ router.post("/register", async (req, res, next) => {
       return user;
     });
 
+    const token = jwt.sign(
+      { userId: newUser.id, role: newUser.role },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
     res.status(201).json({
-      id: newUser.id,
-      email: newUser.email,
-      role: newUser.role,
-      message: "Registration successful. Please log in.",
+      token,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role,
+      },
+      message: "Registration successful.",
     });
   } catch (error) {
     console.error("Error during registration:", error);

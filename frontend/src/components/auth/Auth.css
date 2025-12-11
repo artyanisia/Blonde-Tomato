@@ -1,0 +1,26 @@
+.auth-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+
+.auth-toggle {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.auth-toggle:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.auth-toggle:active {
+  transform: scale(0.98);
+}

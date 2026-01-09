@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Login from "./Login";
 import Register from "./Register";
 import { useSelector } from "react-redux";
@@ -8,30 +8,21 @@ import "./Auth.css";
 function Auth() {
   const [isLoginView, setIsLoginView] = useState(true);
   const navigate = useNavigate();
-  const authStatusRef = useRef(false);
 
   //state.auth = auth = reducer from redux/store
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (
-      isAuthenticated &&
-      !authStatusRef.current &&
-      user &&
-      user.role &&
-      isLoginView
-    ) {
-      authStatusRef.current = true;
-
+    if (isAuthenticated && user) {
       if (user.role === "Student") {
-        navigate("/student/dashboard", { replace: true });
+        navigate("/student/dashboard");
       } else if (user.role === "Professor") {
-        navigate("/professor/dashboard", { replace: true });
+        navigate("/professor/dashboard");
+      }else {
+        console.log("Rolul nu corespunde:", user.role);
       }
-    } else if (!isAuthenticated) {
-      authStatusRef.current = false;
     }
-  }, [isAuthenticated, user, navigate, isLoginView]);
+  }, [isAuthenticated, user, navigate]);
 
   return (
     <div className="auth-container">

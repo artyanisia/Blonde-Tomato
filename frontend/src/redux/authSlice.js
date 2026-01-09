@@ -3,38 +3,24 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000/api/auth";
 
-// Helper pentru localStorage
-const saveAuth = (token, user) => {
-  localStorage.setItem("token", token);
-  localStorage.setItem("user", JSON.stringify(user));
-};
-
-const clearAuth = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-};
-
-const initialState = {
-  token: localStorage.getItem("token"),
-  user: JSON.parse(localStorage.getItem("user")),
-  isAuthenticated: !!localStorage.getItem("token"),
-  loading: false,
-  error: null,
-};
-
 // Login
 export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`${API_URL}/login`, {
-        email,
-        password,
-      });
-      return {
-        token: data.token,
-        user: { id: data.userId, role: data.role, name: data.name },
+      const response = await axios.post(`${API_URL}/login`, { email, password });
+      const { data } = response;
+
+      const userData = { 
+        id: data.userId || data.id, 
+        role: data.role, 
+        name: data.name 
       };
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(userData));
+
+      return { token: data.token, user: userData };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login error");
     }
@@ -46,8 +32,9 @@ export const registerUser = createAsyncThunk(
   "auth/register",
   async (userData, { rejectWithValue }) => {
     try {
-      const { data } = await axios.post(`${API_URL}/register`, userData);
-      return { token: data.token, user: data.user };
+      const response = await axios.post(`${API_URL}/register`, userData);
+      const { data } = response;
+      return data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Registration error"
@@ -58,53 +45,57 @@ export const registerUser = createAsyncThunk(
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: {
+    token: localStorage.getItem("token"),
+    user: JSON.parse(localStorage.getItem("user")),
+    isAuthenticated: !!localStorage.getItem("token"),
+    loading: false,
+    error: null,
+  },
   reducers: {
     logOut: (state) => {
       state.token = null;
       state.user = null;
       state.isAuthenticated = false;
-      clearAuth();
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
   extraReducers: (builder) => {
-    // Pending pentru ambele
-    builder.addMatcher(
-      (action) => action.type.endsWith("/pending"),
-      (state, action) => {
-        console.log("Pending:", action.type);
+
+    //LOGIN
+
+    builder
+      .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
-      }
-    );
-
-    // Fulfilled pentru ambele
-    builder.addMatcher(
-      (action) => action.type.endsWith("/fulfilled"),
-      (state, action) => {
-        console.log(" Fulfilled:", action.type, action.payload);
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.isAuthenticated = true;
         state.token = action.payload.token;
         state.user = action.payload.user;
-        saveAuth(action.payload.token, action.payload.user);
-        console.log("State după fulfilled:", { ...state });
-      }
-    );
-
-    // Rejected pentru ambele
-    builder.addMatcher(
-      (action) => action.type.endsWith("/rejected"),
-      (state, action) => {
-        console.log(" Rejected:", action.type, action.payload);
+        state.isAuthenticated = true;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.isAuthenticated = false;
-        state.token = null;
-        state.user = null;
-        clearAuth();
-      }
-    );
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled , (state, action) => {
+        state.loading = false;
+        state.token = action.payload.token;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.isAuthenticated = false;
+      });
   },
 });
 

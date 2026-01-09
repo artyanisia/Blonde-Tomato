@@ -1,0 +1,41 @@
+.dashboard-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+
+.dashboard-content {
+  display: flex;
+  gap: 40px;
+}
+
+.sessions-section,
+.applications-section {
+  flex: 1;
+}
+
+.session-item,
+.request-item {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.request-item {
+  border-left: 5px solid #2196F3;
+}
+
+.request-item[data-status="Approved"] {
+  border-left-color: #4CAF50;
+}

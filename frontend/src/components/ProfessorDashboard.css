@@ -1,0 +1,57 @@
+.dashboard-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #eee;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.dashboard-content {
+  display: flex;
+  gap: 40px;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.session-form-container {
+  width: 400px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fdfdfd;
+}
+
+.welcome-text {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.role-text {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.session-item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.session-item p {
+  margin: 5px 0;
+}

@@ -13,6 +13,7 @@ function defineRelations() {
   });
   Professor.belongsTo(User, {
     foreignKey: "userId",
+    as: "user"
   });
 
   User.hasOne(Student, {

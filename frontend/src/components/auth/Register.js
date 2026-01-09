@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../redux/authSlice";
 import "./Register.css";
@@ -11,10 +11,8 @@ import { Message } from "primereact/message";
 
 function Register() {
   const dispatch = useDispatch();
-  const { loading, error, isAuthenticated } = useSelector(
-    (state) => state.auth
-  );
-  const [success, setSuccess] = useState(false);
+
+  const { loading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -28,8 +26,9 @@ function Register() {
     { label: "Professor", value: "Professor" },
   ];
 
-  const handleChange = (e, name) => {
-    setFormData({ ...formData, [name]: e.target.value });
+  const handleChange = (e) => {
+    const {name, value} = e.target
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = (e) => {
@@ -45,16 +44,8 @@ function Register() {
       return;
     }
 
-    console.log("Submitting registration with data:", formData);
-    setSuccess(false);
     dispatch(registerUser(formData));
   };
-
-  useEffect(() => {
-    if (isAuthenticated && !loading) {
-      setSuccess(true);
-    }
-  }, [isAuthenticated, loading]);
 
   return (
     <div className="register-container">
@@ -62,19 +53,13 @@ function Register() {
       <form onSubmit={handleSubmit}>
         {error && <Message severity="error" text={`Error: ${error}`} />}
 
-        {success && (
-          <Message
-            severity="success"
-            text="Registration successful! You can now access the dashboard."
-          />
-        )}
-
         <div className="form-field">
           <label htmlFor="name">Full Name</label>
           <InputText
             id="name"
             name="name"
-            onChange={(e) => handleChange(e, "name")}
+            value={formData.name} 
+            onChange={handleChange} 
             required
           />
         </div>
@@ -85,19 +70,8 @@ function Register() {
             id="email"
             name="email"
             type="email"
-            onChange={(e) => handleChange(e, "email")}
-            required
-          />
-        </div>
-
-        <div className="form-field">
-          <label htmlFor="password">Password</label>
-          <Password
-            id="password"
-            name="password"
-            onChange={(e) => handleChange(e, "password")}
-            toggleMask
-            feedback={false}
+            value={formData.email}
+            onChange={handleChange}
             required
           />
         </div>
@@ -109,8 +83,21 @@ function Register() {
             name="role"
             value={formData.role}
             options={roleOptions}
-            onChange={(e) => handleChange(e, "role")}
+            onChange={(e) => setFormData({...formData, role: e.value})} 
             placeholder="Select a role"
+            required
+          />
+        </div>
+
+        <div className="form-field">
+          <label htmlFor="password">Password</label>
+          <Password
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            toggleMask
+            feedback={true}
             required
           />
         </div>

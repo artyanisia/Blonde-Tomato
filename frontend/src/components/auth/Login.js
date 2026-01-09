@@ -7,11 +7,12 @@ import { Message } from "primereact/message";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import { ProgressSpinner } from "primereact/progressspinner";
 
 function Login() {
   const dispatch = useDispatch();
+
   const { loading, error } = useSelector((state) => state.auth);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -30,6 +31,7 @@ function Login() {
     <div className="login-container">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
+        
         {error && <Message severity="error" text={`Error: ${error}`} />}
 
         <div className="form-field">
@@ -61,15 +63,8 @@ function Login() {
           type="submit"
           disabled={loading}
           className="submit-button"
-        >
-          {loading && (
-            <ProgressSpinner
-              className="spinner-inline"
-              strokeWidth="8"
-              animationDuration=".8s"
-            />
-          )}
-        </Button>
+          loading={loading}
+        />
       </form>
     </div>
   );

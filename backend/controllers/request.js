@@ -2,6 +2,7 @@ const Request = require("../models/thesisRequest");
 const Student = require("../models/student");
 const Professor = require("../models/professor");
 const Session = require("../models/session");
+const User = require("../models/user");
 const sequelize = require("../sequelize");
 const fs = require("fs");
 
@@ -242,6 +243,34 @@ exports.uploadProfessorFile = async (req, res, next) => {
       message: "Professor's document uploaded successfully",
       filePath: filePath,
     });
+  } catch (err) {
+    console.log("err", err);
+    next(err);
+  }
+};
+
+exports.getStudentRequests = async (req, res, next) => {
+  const studentId = req.user.userId;
+
+  try {
+    const requests = await Request.findAll({
+      where: { studentId: studentId },
+      include: [
+        {
+          model: Professor,
+          as: "Professor",
+          include: [
+            { 
+              model: User, 
+              as: "user", 
+              attributes: ["name"] 
+            }
+          ]
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+    res.status(200).json(requests);
   } catch (err) {
     console.log("err", err);
     next(err);

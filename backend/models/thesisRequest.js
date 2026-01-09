@@ -21,6 +21,10 @@ const ThesisRequest = sequelize.define("thesisRequest", {
     type: DataTypes.UUID,
     allowNull: false,
   },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   status: {
     type: DataTypes.ENUM,
     values: ["Pending", "Approved", "Rejected", "ReuploadNeeded"],

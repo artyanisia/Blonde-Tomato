@@ -41,4 +41,11 @@ router.put(
   request.uploadProfessorFile
 );
 
+router.get(
+  "/student",
+  authenticate,
+  authorize("Student"),
+  request.getStudentRequests
+);
+
 module.exports = router;

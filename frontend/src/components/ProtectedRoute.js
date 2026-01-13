@@ -8,12 +8,19 @@ const ProtectedRoute = ({ children, allowedRole }) => {
     return <Navigate to="/" />;
   }
 
-  if (allowedRole && user && user.role !== allowedRole) {
-    const targetPath =
-      user.role === "professor" ? "/professor/dashboard" : "/student/dashboard";
+  if (allowedRole && user && user.role) {
+    const userRole = user.role.toLowerCase();
+    const targetAllowedRole = allowedRole.toLowerCase();
 
-    if (window.location.pathname !== targetPath) {
-      return <Navigate to={targetPath} />;
+    if (userRole !== targetAllowedRole) {
+      const targetPath =
+        userRole === "professor"
+          ? "/professor/dashboard"
+          : "/student/dashboard";
+
+      if (window.location.pathname !== targetPath) {
+        return <Navigate to={targetPath} />;
+      }
     }
   }
 

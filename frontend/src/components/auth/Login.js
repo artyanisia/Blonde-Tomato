@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../redux/authSlice";
 import "./Login.css";
 
@@ -10,28 +11,37 @@ import { Button } from "primereact/button";
 
 function Login() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { loading, error } = useSelector((state) => state.auth);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Please write email and password");
       return;
     }
 
-    dispatch(loginUser({ email, password }));
+    try {
+      const result = await dispatch(loginUser({ email, password })).unwrap();
+
+      if (result.user.role === "professor") {
+        navigate("/professor/dashboard");
+      } else {
+        navigate("/student/dashboard");
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
   };
 
   return (
     <div className="login-container">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
-        
         {error && <Message severity="error" text={`Error: ${error}`} />}
 
         <div className="form-field">

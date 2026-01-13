@@ -62,19 +62,32 @@ exports.acceptRequest = async (req, res, next) => {
 
   try {
     const request = await Request.findByPk(requestId, { include: ["Student"] });
-    const professor = await Professor.findByPk(professorId);
-
     if (!request) return res.status(404).json({ message: "Request not found" });
+
     if (request.professorId !== professorId)
       return res.status(403).json({ message: "Unauthorized" });
+
     if (request.status !== "Pending")
       return res.status(400).json({ message: "Request is not pending" });
+
     if (request.Student.hasCoordinator)
       return res
         .status(400)
         .json({ message: "Student already has a coordinator" });
-    if (professor.currentStudentsCount >= professor.maxStudents)
-      return res.status(400).json({ message: "Max students reached" });
+
+    const professor = await Professor.findByPk(professorId);
+
+    if (!professor) {
+      return res.status(404).json({ message: "Professor record not found" });
+    }
+
+    if (
+      Number(professor.currentStudentsCount) >= Number(professor.maxStudents)
+    ) {
+      return res.status(409).json({
+        message: `Limit reached! You can coordinate a maximum of ${professor.maxStudents} students.`,
+      });
+    }
 
     await sequelize.transaction(async (t) => {
       await request.update({ status: "Approved" }, { transaction: t });
@@ -99,8 +112,11 @@ exports.acceptRequest = async (req, res, next) => {
       );
     });
 
-    return res.status(200).json({ message: "Student accepted successfully" });
+    return res
+      .status(200)
+      .json({ message: "Request approved successfully", requestId });
   } catch (err) {
+    console.log("err", err);
     next(err);
   }
 };

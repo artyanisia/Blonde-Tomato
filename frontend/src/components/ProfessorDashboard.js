@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logOut } from "../redux/authSlice";
 import { fetchSessions } from "../redux/sessionSlice";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
 import CreateSession from "./CreateSession";
 import "./Dashboard.css";
 import {
@@ -17,6 +18,7 @@ import {
 function ProfessorDashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const toast = useRef(null);
   const { user, token } = useSelector((state) => state.auth);
   const { sessions } = useSelector((state) => state.sessions);
   const { requests } = useSelector((state) => state.requests);
@@ -34,8 +36,21 @@ function ProfessorDashboard() {
   };
 
   const handleApproveRequest = async (requestId) => {
-    await dispatch(approveRequest({ requestId, token })).unwrap();
-    dispatch(fetchProfessorRequests(token));
+    try {
+      await dispatch(approveRequest({ requestId, token })).unwrap();
+      dispatch(fetchProfessorRequests(token));
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Student approved successfully",
+      });
+    } catch (err) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: err || "Failed to approve request",
+      });
+    }
   };
 
   const handleRejectRequest = async (requestId) => {
@@ -47,8 +62,17 @@ function ProfessorDashboard() {
         rejectRequest({ requestId, rejectionReason: reason, token })
       ).unwrap();
       dispatch(fetchProfessorRequests(token));
+      toast.current.show({
+        severity: "info",
+        summary: "Rejected",
+        detail: "Request has been rejected",
+      });
     } catch (err) {
-      alert(err || "Failed to reject request");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: err || "Failed to reject request",
+      });
     }
   };
 
@@ -63,8 +87,17 @@ function ProfessorDashboard() {
         rejectThesisRequest({ requestId, rejectionReason: reason, token })
       ).unwrap();
       dispatch(fetchProfessorRequests(token));
+      toast.current.show({
+        severity: "info",
+        summary: "Document Rejected",
+        detail: "Submission rejected and revision requested",
+      });
     } catch (err) {
-      alert(err || "Failed to reject document");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: err || "Failed to reject document",
+      });
     }
   };
   const handleUploadProfessorFile = async (requestId, event) => {
@@ -79,8 +112,17 @@ function ProfessorDashboard() {
         uploadProfessorFile({ requestId, formData, token })
       ).unwrap();
       dispatch(fetchProfessorRequests(token));
+      toast.current.show({
+        severity: "success",
+        summary: "Uploaded",
+        detail: "Document uploaded successfully",
+      });
     } catch (err) {
-      alert(err || "Upload failed");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: err || "Upload failed",
+      });
     }
   };
 
@@ -91,6 +133,7 @@ function ProfessorDashboard() {
 
   return (
     <div className="dashboard-container">
+      <Toast ref={toast} />
       <div className="dashboard-header">
         <h1>Professor Dashboard</h1>
         <Button
@@ -187,54 +230,58 @@ function ProfessorDashboard() {
                       ) : (
                         <>
                           {req.signedRequestFilePath ? (
-                            <div style={{ display: "flex", gap: "10px" }}>
-                              <Button
-                                label="Download Student's Signed File"
-                                icon="pi pi-download"
-                                className="p-button-outlined p-button-info p-button-sm"
-                                onClick={() =>
-                                  window.open(
-                                    `http://localhost:5000/${req.signedRequestFilePath}`,
-                                    "_blank"
-                                  )
-                                }
-                              />
-                              <Button
-                                label="Reject Thesis Document"
-                                icon="pi pi-times"
-                                className="p-button-outlined p-button-danger p-button-sm"
-                                onClick={() =>
-                                  handleRejectThesisRequest(req.id)
-                                }
-                              />
-                            </div>
+                            <>
+                              <div style={{ display: "flex", gap: "10px" }}>
+                                <Button
+                                  label="Download Student's Signed File"
+                                  icon="pi pi-download"
+                                  className="p-button-outlined p-button-info p-button-sm"
+                                  onClick={() =>
+                                    window.open(
+                                      `http://localhost:5000/${req.signedRequestFilePath}`,
+                                      "_blank"
+                                    )
+                                  }
+                                />
+                                <Button
+                                  label="Reject Thesis Document"
+                                  icon="pi pi-times"
+                                  className="p-button-outlined p-button-danger p-button-sm"
+                                  onClick={() =>
+                                    handleRejectThesisRequest(req.id)
+                                  }
+                                />
+                              </div>
+
+                              <div className="professor-upload">
+                                <input
+                                  type="file"
+                                  accept=".pdf"
+                                  onChange={(e) =>
+                                    handleUploadProfessorFile(req.id, e)
+                                  }
+                                  id={`professor-upload-${req.id}`}
+                                  style={{ display: "none" }}
+                                />
+                                <Button
+                                  label="Upload Final Signed File"
+                                  icon="pi pi-upload"
+                                  className="p-button-success p-button-sm"
+                                  onClick={() =>
+                                    document
+                                      .getElementById(
+                                        `professor-upload-${req.id}`
+                                      )
+                                      .click()
+                                  }
+                                />
+                              </div>
+                            </>
                           ) : (
                             <p style={{ fontSize: "0.85em", color: "#666" }}>
                               Waiting for student to upload signed request...
                             </p>
                           )}
-
-                          <div className="professor-upload">
-                            <input
-                              type="file"
-                              accept=".pdf"
-                              onChange={(e) =>
-                                handleUploadProfessorFile(req.id, e)
-                              }
-                              id={`professor-upload-${req.id}`}
-                              style={{ display: "none" }}
-                            />
-                            <Button
-                              label="Upload Final Signed File"
-                              icon="pi pi-upload"
-                              className="p-button-success p-button-sm"
-                              onClick={() =>
-                                document
-                                  .getElementById(`professor-upload-${req.id}`)
-                                  .click()
-                              }
-                            />
-                          </div>
                         </>
                       )}
                     </div>

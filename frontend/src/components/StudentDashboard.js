@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logOut } from "../redux/authSlice";
@@ -10,11 +10,13 @@ import {
 } from "../redux/requestSlice";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
+import { Toast } from "primereact/toast";
 import "./Dashboard.css";
 
 function StudentDashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const toast = useRef(null);
 
   const { user, token } = useSelector((state) => state.auth);
   const { sessions } = useSelector((state) => state.sessions);
@@ -33,31 +35,53 @@ function StudentDashboard() {
     }
   }, [dispatch, token, user?.role]);
 
-  const handleApply = (sessionId, professorId) => {
+  const handleApply = async (sessionId, professorId) => {
     const title = prompt("Enter thesis title: ");
-    if (title) {
-      dispatch(
+    if (!title) return;
+
+    try {
+      await dispatch(
         createRequest({ requestData: { sessionId, professorId, title }, token })
-      );
+      ).unwrap();
       dispatch(fetchStudentRequests(token));
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Application submitted successfully",
+      });
+    } catch (err) {
+      toast.current.show({
+        severity: "error",
+        summary: "Application Failed",
+        detail: err || "Could not submit application",
+      });
     }
   };
 
-  const handleFileUpload = (requestId, event) => {
+  const handleFileUpload = async (requestId, event) => {
     const file = event.target.files[0];
     if (!file) return;
 
     const formData = new FormData();
     formData.append("signedDocument", file);
 
-    dispatch(uploadStudentFile({ requestId, formData, token }))
-      .unwrap()
-      .then(() => {
-        dispatch(fetchStudentRequests(token));
-      })
-      .catch((err) => {
-        alert(err || "Upload failed");
+    try {
+      await dispatch(
+        uploadStudentFile({ requestId, formData, token })
+      ).unwrap();
+      dispatch(fetchStudentRequests(token));
+      toast.current.show({
+        severity: "success",
+        summary: "File Uploaded",
+        detail: "Your signed document has been submitted",
       });
+    } catch (err) {
+      toast.current.show({
+        severity: "error",
+        summary: "Upload Failed",
+        detail: err || "Could not upload file",
+      });
+    }
   };
 
   const approvedRequest = requests.find(
@@ -66,6 +90,7 @@ function StudentDashboard() {
 
   return (
     <div className="dashboard-container">
+      <Toast ref={toast} />
       <div className="dashboard-header">
         <h1>Student Dashboard</h1>
         <Button

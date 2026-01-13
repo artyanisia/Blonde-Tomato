@@ -13,13 +13,14 @@ function Auth() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      if (user.role === "Student") {
+    if (isAuthenticated && user && user.role) {
+      const role = user.role.toLowerCase();
+      if (role === "student") {
         navigate("/student/dashboard");
-      } else if (user.role === "Professor") {
+      } else if (role === "professor") {
         navigate("/professor/dashboard");
-      }else {
-        console.log("Rolul nu corespunde:", user.role);
+      } else {
+        console.log("Unknown role:", user.role);
       }
     }
   }, [isAuthenticated, user, navigate]);

@@ -1,20 +1,24 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import API_BASE_URL from "../api.config";
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = `${API_BASE_URL}/api/auth`;
 
 // Login
 export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/login`, { email, password });
+      const response = await axios.post(`${API_URL}/login`, {
+        email,
+        password,
+      });
       const { data } = response;
 
-      const userData = { 
-        id: data.userId || data.id, 
-        role: data.role, 
-        name: data.name 
+      const userData = {
+        id: data.userId || data.id,
+        role: data.role,
+        name: data.name,
       };
 
       localStorage.setItem("token", data.token);
@@ -62,7 +66,6 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-
     //LOGIN
 
     builder
@@ -85,7 +88,7 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled , (state, action) => {
+      .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.token = action.payload.token;
         state.user = action.payload.user;

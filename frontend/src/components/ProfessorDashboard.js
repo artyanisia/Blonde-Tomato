@@ -14,6 +14,7 @@ import {
   rejectThesisRequest,
   uploadProfessorFile,
 } from "../redux/requestSlice";
+import API_BASE_URL from "../api.config";
 
 function ProfessorDashboard() {
   const dispatch = useDispatch();
@@ -221,7 +222,7 @@ function ProfessorDashboard() {
                             className="p-button-success p-button-sm"
                             onClick={() =>
                               window.open(
-                                `http://localhost:5000/${req.finalProfessorFileUrl}`,
+                                `${API_BASE_URL}/${req.finalProfessorFileUrl}`,
                                 "_blank"
                               )
                             }
@@ -238,7 +239,7 @@ function ProfessorDashboard() {
                                   className="p-button-outlined p-button-info p-button-sm"
                                   onClick={() =>
                                     window.open(
-                                      `http://localhost:5000/${req.signedRequestFilePath}`,
+                                      `${API_BASE_URL}/${req.signedRequestFilePath}`,
                                       "_blank"
                                     )
                                   }

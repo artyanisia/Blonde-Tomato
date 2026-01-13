@@ -1,12 +1,12 @@
 import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import API_BASE_URL from "../api.config";
 
-const API_URL = "http://localhost:5000/api/sessions";
+const API_URL = `${API_BASE_URL}/api/sessions`;
 
 export const createSession = createAsyncThunk(
   "sessions/createSession",
- async ({ sessionData, token }, { rejectWithValue }) => {
-
+  async ({ sessionData, token }, { rejectWithValue }) => {
     try {
       const response = await axios.post(API_URL, sessionData, {
         headers: {
@@ -16,21 +16,23 @@ export const createSession = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Error at session creation");
+      return rejectWithValue(
+        error.response?.data?.message || "Error at session creation"
+      );
     }
   }
 );
 
 export const fetchSessions = createAsyncThunk(
-  "sessions/getSessions", 
+  "sessions/getSessions",
   async ({ token, role }, { rejectWithValue }) => {
     try {
       const url = role === "Student" ? `${API_URL}/all` : API_URL;
-      
+
       const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      return response.data; 
+      return response.data;
     } catch (error) {
       return rejectWithValue("Error at session fetching");
     }

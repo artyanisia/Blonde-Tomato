@@ -11,6 +11,7 @@ import {
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { Toast } from "primereact/toast";
+import API_BASE_URL from "../api.config";
 import "./Dashboard.css";
 
 function StudentDashboard() {
@@ -184,7 +185,7 @@ function StudentDashboard() {
                     className="p-button-success"
                     onClick={() =>
                       window.open(
-                        `http://localhost:5000/${approvedRequest.finalProfessorFileUrl}`,
+                        `${API_BASE_URL}/${approvedRequest.finalProfessorFileUrl}`,
                         "_blank"
                       )
                     }

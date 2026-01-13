@@ -25,6 +25,7 @@ sequelize
       })
     );
     application.use(express.json());
+    application.use("/uploads", express.static("uploads"));
 
     // Root route
     application.get("/", (req, res) => {

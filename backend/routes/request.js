@@ -26,6 +26,13 @@ router.put(
 );
 
 router.put(
+  "/:requestId/rejectThesis",
+  authenticate,
+  authorize("Professor"),
+  request.rejectThesisRequest
+);
+
+router.put(
   "/:requestId/uploadStudentFile",
   authenticate,
   authorize("Student"),
@@ -46,6 +53,13 @@ router.get(
   authenticate,
   authorize("Student"),
   request.getStudentRequests
+);
+
+router.get(
+  "/professor",
+  authenticate,
+  authorize("Professor"),
+  request.getProfessorRequests
 );
 
 module.exports = router;

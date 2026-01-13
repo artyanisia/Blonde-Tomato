@@ -84,6 +84,7 @@ exports.getAllSessions = async(req, res, next) => {
           include: [
             {
               model: User,
+              as: "user",
               attributes: ["name"],
             },
           ],

@@ -22,6 +22,7 @@ function defineRelations() {
   });
   Student.belongsTo(User, {
     foreignKey: "userId",
+    as: "user"
   });
 
   Professor.hasMany(Session, {

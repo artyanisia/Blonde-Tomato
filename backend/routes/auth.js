@@ -50,7 +50,7 @@ router.post("/register", async (req, res, next) => {
         await Professor.create(
           {
             userId: user.id,
-            maxStudents: 10,
+            maxStudents: 5,
             currentStudentsCount: 0,
           },
           { transaction: t }

@@ -1,0 +1,92 @@
+.dashboard-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.card-item,
+.session-item,
+.request-item {
+  border: 1px solid #e0e0e0;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  background: white;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-item:hover,
+.session-item:hover,
+.request-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.user-info,
+.sessions-section,
+.applications-section {
+  flex: 1;
+}
+
+.session-form-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+}
+
+.welcome-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.role-text {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.request-item {
+  border-left: 5px solid #2196f3;
+}
+
+.request-item.approved {
+  border-left-color: #4caf50;
+}
+
+.card-item p,
+.session-item p,
+.request-item p {
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+.request-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+hr {
+  border: 0;
+  border-top: 2px solid #f0f0f0;
+  margin: 2rem 0;
+}

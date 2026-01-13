@@ -3,16 +3,23 @@ const path = require("path");
 
 require("dotenv").config();
 
-console.log("Checking database connection environment variables...");
-if (!process.env.DATABASE_URL) {
-  console.error("ERROR: DATABASE_URL is not defined in environment variables!");
+const connectionString = process.env.DATABASE_URL;
+
+console.log("Checking database connection...");
+if (!connectionString) {
+  console.error("ERROR: DATABASE_URL is not defined!");
 } else {
-  console.log("DATABASE_URL is defined.");
+  if (
+    connectionString.includes("localhost") ||
+    connectionString.includes("127.0.0.1")
+  ) {
+    console.warn(
+      "WARNING: DATABASE_URL points to localhost but you are in production!"
+    );
+  }
 }
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: "postgres",
-  protocol: "postgres",
+const sequelize = new Sequelize(connectionString, {
   logging: false,
   dialectOptions: {
     ssl: {

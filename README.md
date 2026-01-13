@@ -1,91 +1,79 @@
-# Blonde-Tomato
-
-# Dissertation Registration Web Application
-
-This project is a complete **Single Page Application (SPA)** designed to streamline the dissertation registration and coordination process between students and coordinating professors.
-
+#  Blonde-Tomato: Dissertation Registration System
+O aplicație web Full-Stack (SPA) modernă concepută pentru a eficientiza procesul de înscriere la licență/disertație și coordonarea dintre studenți și profesorii coordonatori.
 ---
-
-## Technology Stack & Architecture
-
-| Component              | Technology               | Status | Description                                                               |
-| :--------------------- | :----------------------- | :----- | :------------------------------------------------------------------------ |
-| **Platform**           | **Node.js**              | ✅     | JavaScript runtime environment.                                           |
-| **Framework**          | **Express.js**           | ✅     | Modular web application framework for API routing and middleware.         |
-| **Database**           | **PostgreSQL**           | ✅     | Relational database for data persistence.                                 |
-| **ORM / Persistence**  | **Sequelize**            | ✅     | Object-Relational Mapper used for all database interactions.              |
-| **Security**           | **JWT & bcrypt**         | ✅     | Used for secure authentication and password hashing.                      |
-
+##  Tehnologii Utilizate
+### Frontend
+- **React.js**: Bibliotecă pentru interfața cu utilizatorul.
+- **Redux Toolkit**: Managementul stării globale (Auth, Sesiuni, Cereri).
+- **PrimeReact**: Componente UI premium pentru o experiență utilizator de top.
+- **React Router**: Navigare SPA cu **Protected Routes** (securitate la nivel de rută).
+### Backend
+- **Node.js & Express**: Server RESTful API robust.
+- **Sequelize ORM**: Gestionarea bazei de date relaționale.
+- **PostgreSQL**: Persistența datelor.
+- **JWT & bcrypt**: Autentificare securizată și criptarea parolelor.
+- **Multer**: Gestionarea încărcării fișierelor PDF.
 ---
-
-## Servicii RESTful Implementate (Etapa 06.12.2025)
-
-The service is organized using the **Route $\rightarrow$ Controller** pattern, ensuring high code quality and clear separation of concerns.
-
-### 1. Autentificare și Managementul Identității
-
-| Calea                | Metoda | Rolul  | Securitate | Logica de Business                                                                                            |
-| :------------------- | :----- | :----- | :--------- | :------------------------------------------------------------------------------------------------------------ |
-| `/api/auth/register` | `POST` | Public | N/A        | Creates `User` and the corresponding role (`Professor` or `Student`) atomically using Sequelize transactions. |
-| `/api/auth/login`    | `POST` | Public | N/A        | Verifies credentials, returns `200 OK`, and issues a **JWT Token**.                                           |
-
-### 2. Managementul Sesiunilor (Logica Critică)
-
-| Calea           | Metoda | Rolul    | Securitate                                       | Logica de Business                                                                                                                                                     |
-| :-------------- | :----- | :------- | :----------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/api/sessions` | `POST` | Profesor | **JWT Authenticated & Authorized** (`Professor`) | **Non-Overlapping Constraint:** Checks existing sessions using Sequelize operators (`Op.and`, `Op.gt`, `Op.lt`). Returns `409 Conflict` if a time overlap is detected. |
-| `/api/sessions` | `GET`  | Profesor | **JWT Authenticated & Authorized** (`Professor`) | Lists all enrollment sessions created by the authenticated professor.                                                                                                  |
-
-### 3. Utilități DB
-
-| Calea       | Metoda | Rolul       | Descriere                                                                                                                                         |
-| :---------- | :----- | :---------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/api/sync` | `PUT`  | Development | **Database Synchronization:** Executes `sequelize.sync({ force: true })` to drop and recreate all tables. **Must be run once for initial setup.** |
-
+##  Funcționalități Principale
+### 1. Sistem de Autentificare & Roluri
+- **Înregistrare/Login**: Diferențiere clară între `Student` și `Profesor`.
+- **Securitate**: Accesul la dashboard-uri este restricționat prin rute protejate. Un student nu poate accesa interfața de profesor și invers.
+### 2. Managementul Sesiunilor (Profesor)
+- Crearea de sesiuni de înscriere cu interval orar.
+- **Validare Logică**: Sistemul previne suprapunerea intervalelor orare pentru același profesor (Conflict 409).
+- Setarea unei limite maxime de studenți (`maxStudents`).
+### 3. Fluxul de Cerere Teză (Student & Profesor)
+- **Student**: Vizualizează sesiunile active și aplică cu un titlu de teză.
+- **Profesor**: Aprobă sau respinge cererile primite.
+- **Restricție**: Un student poate avea un singur coordonator. La aprobare, toate celelalte cereri ale studentului sunt respinse automat.
+- **Capacitate**: Profesorul nu poate accepta studenți peste limita setată.
+### 4. Managementul Documentelor (Workflow Revizie)
+- **Student**: Încarcă fișierul semnat (PDF).
+- **Profesor**:
+  - Descarcă și verifică documentul.
+  - **Revision Needed**: Poate cere revizuirea documentului (status `ReuploadNeeded`), trimițând un motiv studentului.
+  - **Final**: Încarcă varianta finală semnată după ce totul este corect.
+- **Feedback**: Notificări tip **Toast** în timp real pentru orice acțiune (succes/eroare).
 ---
-
-## Instrucțiuni de Rulare și Setup
-
+## Instalare și Configurare Locală
 ### 1. Precondiții
+- Node.js (v16+)
+- PostgreSQL (instalat local sau Neon.tech)
+### 2. Clonare și Dependențe
+```bash
+git clone https://github.com/artyanisia/Blonde-Tomato.git
+cd Blonde-Tomato
+npm install          # Instalează dependințele pentru rădăcină (Prettier, etc.)
+cd backend && npm install
+cd ../frontend && npm install
+```
+### 3. Configurare Environment (.env)
+Creați un fișier `.env` în folderul `backend/`:
+```dotenv
+DATABASE_URL="postgresql://user:password@localhost:5432/db_name"
+JWT_SECRET="cheie_secreta_pentru_token"
+PORT=5000
+```
+### 4. Pornirea Aplicației
+**Backend:**
+```bash
+cd backend
+npm start
+```
+**Frontend:**
+```bash
+cd frontend
+npm start
+```
+---
 
-- **Node.js** (recomandat v16+)
-- **PostgreSQL** Server running (configured to use port **5433** if you experienced conflicts).
-- **Postman** (for API testing).
-
-### 2. Instalarea și Configurarea Bazei de Date
-
-1.  **Clonează Repository-ul** și navighează în directorul rădăcină (`BLONDE-TOMATO/`).
-2.  **Instalează Dependențele:**
-    ```bash
-    npm install
-    ```
-3.  **Configurare PostgreSQL:** Create the database **`projecttw_db`** in pgAdmin.
-4.  **Configurează `.env`:** Create or update the **`.env`** file in the root directory:
-
-    ```dotenv
-    # Conexiunea la PostgreSQL (Portul 5433)
-    # ATENȚIE: Schimbați parola și verificați portul (5433)
-    DATABASE_URL="postgresql://postgres:[parola_ta]@localhost:5433/projecttw_db"
-
-    # Cheia Secreta pentru JWT (Obligatoriu pentru securitate)
-    JWT_SECRET="o_cheie_secreta_unica_si_complexa"
-    PORT=3000
-    ```
-
-### 3. Pornirea Serverului și Sincronizarea Schemei
-
-1.  **Pornirea Serverului Express:**
-    ```bash
-    npm run dev
-    ```
-2.  **Sincronizarea Tabelelor (OBLIGATORIU PRIMA DATĂ):**
-    Folosește Postman pentru a crea schema DB:
-    - **Metoda:** `PUT`
-    - **URL:** `http://localhost:3000/api/sync`
-    - **Răspuns Așteptat:** **`204 No Content`**.
-
-### 4. Fluxul de Testare de Bază (Postman)
-
-1.  **Înregistrare:** `POST /api/auth/register` (Creează un utilizator cu `role: "Professor"`).
-2.  **Autentificare:** `POST /api/auth/login` (Obține token-ul JWT).
-3.  **Creare Sesiune:** `POST /api/sessions` (Trimite intervalul orar, folosind token-ul de la pasul 2 în header-ul `Authorization: Bearer [token]`).
+##  Servicii RESTful (Sumar API)
+| Calea                                   | Metoda | Rol      | Descriere                                       |
+| :-------------------------------------- | :----- | :------- | :---------------------------------------------- |
+| `/api/auth/register`                    | `POST` | Public   | Creează utilizator și rol (tranzacție atomică). |
+| `/api/auth/login`                       | `POST` | Public   | Emite JWT Token.                                |
+| `/api/sessions`                         | `POST` | Profesor | Creare sesiune (non-overlapping).               |
+| `/api/requests/create`                  | `POST` | Student  | Trimite cerere de coordonare.                   |
+| `/api/requests/:requestId/accept`       | `PUT`  | Profesor | Aprobă student (verifică limita max).           |
+| `/api/requests/:requestId/rejectThesis` | `PUT`  | Profesor | Cere revizuirea documentului PDF.               |
+---
